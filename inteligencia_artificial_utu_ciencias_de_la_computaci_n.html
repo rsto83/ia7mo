@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorando la Inteligencia Artificial - 7.° UTU</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome para íconos -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Poppins -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti para celebración -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #311042 100%);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px -5px rgba(124, 58, 237, 0.3);
+        }
+        /* Estilos para animación de cambio de página */
+        .page-slide {
+            display: none;
+            animation: fadeIn 0.4s ease-in-out forwards;
+        }
+        .page-slide.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .nav-btn.active-tab {
+            background-color: rgba(147, 51, 234, 0.3);
+            border-color: #a855f7;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col justify-between select-none">
+
+    <!-- Navegación Superior (Menú de Páginas) -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-slate-900/90 border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo / Título -->
+                <div class="flex items-center space-x-3 cursor-pointer" onclick="goToPage(0)">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-indigo-500 flex items-center justify-center text-white font-bold text-xl shadow-lg">
+                        <i class="fa-solid fa-brain"></i>
+                    </div>
+                    <div>
+                        <span class="font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 text-lg sm:text-xl">
+                            IA Lab - UTU
+                        </span>
+                        <span class="hidden sm:inline-block text-xs bg-purple-900/50 text-purple-300 border border-purple-700 px-2 py-0.5 rounded-full ml-2">7.° Año</span>
+                    </div>
+                </div>
+
+                <!-- Menú en Pantallas Medias/Grandes -->
+                <nav class="hidden md:flex space-x-2 text-xs font-semibold" id="desktop-menu">
+                    <button onclick="goToPage(0)" class="nav-btn px-3 py-2 rounded-lg border border-transparent hover:bg-slate-800 text-slate-300 transition">
+                        🏠 Inicio
+                    </button>
+                    <button onclick="goToPage(1)" class="nav-btn px-3 py-2 rounded-lg border border-transparent hover:bg-slate-800 text-slate-300 transition">
+                        1. ¿Qué es?
+                    </button>
+                    <button onclick="goToPage(2)" class="nav-btn px-3 py-2 rounded-lg border border-transparent hover:bg-slate-800 text-slate-300 transition">
+                        2. Tipos de IA
+                    </button>
+                    <button onclick="goToPage(3)" class="nav-btn px-3 py-2 rounded-lg border border-transparent hover:bg-slate-800 text-slate-300 transition">
+                        3. Historia
+                    </button>
+                    <button onclick="goToPage(4)" class="nav-btn px-3 py-2 rounded-lg border border-transparent hover:bg-slate-800 text-slate-300 transition">
+                        4. Uso Diario
+                    </button>
+                    <button onclick="goToPage(5)" class="nav-btn px-3 py-2 rounded-lg border border-transparent hover:bg-slate-800 text-purple-300 transition font-bold bg-purple-900/30 border-purple-700">
+                        🎮 Trivia
+                    </button>
+                    <button onclick="goToPage(6)" class="nav-btn px-3 py-2 rounded-lg border border-transparent hover:bg-slate-800 text-amber-300 transition">
+                        📝 Preguntas
+                    </button>
+                </nav>
+
+                <!-- Contador de Página / Progreso -->
+                <div class="text-xs bg-slate-800 border border-slate-700 text-slate-300 px-3 py-1.5 rounded-xl font-mono">
+                    Página <span id="page-indicator" class="text-purple-400 font-bold">1</span> / 7
+                </div>
+            </div>
+        </div>
+
+        <!-- Menú Desplegable Móvil -->
+        <div class="md:hidden flex overflow-x-auto gap-2 px-4 py-2 border-t border-slate-800/80 bg-slate-900 text-xs no-scrollbar">
+            <button onclick="goToPage(0)" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950">🏠 Inicio</button>
+            <button onclick="goToPage(1)" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950">1. ¿Qué es?</button>
+            <button onclick="goToPage(2)" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950">2. Tipos de IA</button>
+            <button onclick="goToPage(3)" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950">3. Historia</button>
+            <button onclick="goToPage(4)" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950">4. Uso Diario</button>
+            <button onclick="goToPage(5)" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950 text-purple-300">🎮 Trivia</button>
+            <button onclick="goToPage(6)" class="nav-btn whitespace-nowrap px-3 py-1.5 rounded-lg border border-slate-800 bg-slate-950 text-amber-300">📝 Preguntas</button>
+        </div>
+    </header>
+
+    <!-- CONTENEDOR PRINCIPAL DE PÁGINAS -->
+    <main class="max-w-5xl mx-auto px-4 py-6 flex-grow flex items-center justify-center w-full">
+
+        <!-- PÁGINA 0: PORTADA / INICIO -->
+        <section class="page-slide active w-full">
+            <div class="gradient-bg p-8 sm:p-12 rounded-3xl border border-purple-800/50 text-center relative overflow-hidden shadow-2xl">
+                <span class="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-xs px-4 py-1.5 rounded-full font-semibold uppercase tracking-wider">
+                    UTU &bull; Ciencias de la Computación &bull; 7.° Año
+                </span>
+                <h1 class="text-3xl sm:text-5xl font-black text-white mt-4 mb-4 tracking-tight leading-tight">
+                    Descubriendo el Mundo de la <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-400 to-amber-300">
+                        Inteligencia Artificial
+                    </span>
+                </h1>
+                <p class="text-slate-300 text-sm sm:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
+                    Un recorrido interactivo diseñado para entender cómo piensan las máquinas, la diferencia entre las herramientas que usás todos los días y los desafíos para el aula.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="goToPage(1)" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-bold px-6 py-3 rounded-2xl shadow-lg transition transform hover:-translate-y-0.5 text-sm flex items-center gap-2">
+                        Comenzar la Clase <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                    <button onclick="goToPage(5)" class="bg-slate-800 hover:bg-slate-700 text-purple-300 border border-purple-700/50 font-bold px-6 py-3 rounded-2xl transition text-sm flex items-center gap-2">
+                        🎮 ir a la Trivia
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 1: ¿Qué es la IA? -->
+        <section class="page-slide w-full">
+            <div class="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
+                    <div class="p-3 bg-purple-900/40 border border-purple-700/50 rounded-xl text-purple-400">
+                        <i class="fa-solid fa-lightbulb text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-white">1. ¿Qué es la Inteligencia Artificial?</h2>
+                        <p class="text-xs text-slate-400">Entendiendo el concepto básico sin complicaciones</p>
+                    </div>
+                </div>
+
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed mb-6">
+                    La <strong>Inteligencia Artificial (IA)</strong> es una rama de la informática que busca crear programas informáticos capaces de realizar tareas que, hasta hace poco, requirieron de la <strong>inteligencia humana</strong>.
+                </p>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
+                        <i class="fa-solid fa-database text-purple-400 text-3xl mb-2"></i>
+                        <h3 class="font-bold text-white text-sm mb-1">Procesar Datos</h3>
+                        <p class="text-slate-400 text-xs">Analiza millones de informaciones e imágenes en milisegundos.</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
+                        <i class="fa-solid fa-graduation-cap text-pink-400 text-3xl mb-2"></i>
+                        <h3 class="font-bold text-white text-sm mb-1">Aprender</h3>
+                        <p class="text-slate-400 text-xs">Mejora con la experiencia a medida que procesa más datos.</p>
+                    </div>
+                    <div class="bg-slate-950 p-4 rounded-2xl border border-slate-800 text-center">
+                        <i class="fa-solid fa-robot text-cyan-400 text-3xl mb-2"></i>
+                        <h3 class="font-bold text-white text-sm mb-1">Tomar Decisiones</h3>
+                        <p class="text-slate-400 text-xs">Encuentra patrones para dar respuestas rápidas e inteligentes.</p>
+                    </div>
+                </div>
+
+                <!-- Cuadro de analogía -->
+                <div class="bg-purple-950/40 border border-purple-800/60 p-4 rounded-2xl text-xs sm:text-sm text-purple-200">
+                    💡 <strong>Para entenderlo fácil:</strong> Un programa tradicional sigue instrucciones fijas ("receta de cocina"). Un sistema con IA aprende leyendo miles de recetas y crea sus propias respuestas basadas en lo que aprendió.
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 2: Tipos de IA -->
+        <section class="page-slide w-full">
+            <div class="bg-slate-900 border border-slate-800 p-5 sm:p-8 rounded-3xl shadow-xl">
+                <div class="flex items-center gap-3 mb-5 border-b border-slate-800 pb-3">
+                    <div class="p-3 bg-pink-900/40 border border-pink-700/50 rounded-xl text-pink-400">
+                        <i class="fa-solid fa-layer-group text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl sm:text-3xl font-bold text-white">2. ¿Cómo clasificamos la Inteligencia Artificial?</h2>
+                        <p class="text-xs text-slate-400">De las plataformas cotidianas a los asistentes inteligentes</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <!-- 1. IA Débil / Específica -->
+                    <div class="card-hover bg-slate-950 border-2 border-cyan-800/60 p-4 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-0.5 rounded-full bg-cyan-900/50 text-cyan-300 border border-cyan-700 text-[10px] font-bold uppercase">
+                                    IA Específica
+                                </span>
+                                <i class="fa-solid fa-play text-cyan-400 text-lg"></i>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-bold text-white mb-2">1. IA en Plataformas</h3>
+                            <p class="text-slate-300 text-xs mb-3 leading-relaxed">
+                                Programada para hacer <strong>una sola tarea muy específica</strong> dentro de una aplicación. No sabe hacer nada más.
+                            </p>
+                            <ul class="text-[11px] text-slate-400 space-y-1 mb-3">
+                                <li>• Recomendar videos en TikTok o YouTube.</li>
+                                <li>• Crear listas semanales en Spotify.</li>
+                                <li>• Detectar spam en el correo electrónico.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-cyan-950/60 p-2 rounded-xl border border-cyan-800/40 text-center text-[11px] text-cyan-200 font-medium">
+                            📌 <strong>Ejemplo:</strong> Algoritmo de TikTok o Spotify.
+                        </div>
+                    </div>
+
+                    <!-- 2. IA Generativa / Conversacional -->
+                    <div class="card-hover bg-slate-950 border-2 border-purple-800/60 p-4 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-0.5 rounded-full bg-purple-900/50 text-purple-300 border border-purple-700 text-[10px] font-bold uppercase">
+                                    IA Interactiva
+                                </span>
+                                <i class="fa-solid fa-comments text-purple-400 text-lg"></i>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-bold text-white mb-2">2. IA Generativa / Chat</h3>
+                            <p class="text-slate-300 text-xs mb-3 leading-relaxed">
+                                Permite <strong>interactuar en tiempo real</strong>, acceder a información masiva, responder preguntas complejas y crear nuevo contenido.
+                            </p>
+                            <ul class="text-[11px] text-slate-400 space-y-1 mb-3">
+                                <li>• Escribe resúmenes, cuentos y explicaciones.</li>
+                                <li>• Resuelve problemas de código e idiomas.</li>
+                                <li>• Mantiene conversaciones casi como un humano.</li>
+                            </ul>
+                        </div>
+                        <div class="bg-purple-950/60 p-2 rounded-xl border border-purple-800/40 text-center text-[11px] text-purple-200 font-medium">
+                            🤖 <strong>Ejemplos:</strong> ChatGPT, Gemini, Copilot.
+                        </div>
+                    </div>
+
+                    <!-- 3. IA Fuerte / General (Ficción / Futuro) -->
+                    <div class="card-hover bg-slate-950 border-2 border-pink-800/60 p-4 rounded-2xl flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <span class="px-2 py-0.5 rounded-full bg-pink-900/50 text-pink-300 border border-pink-700 text-[10px] font-bold uppercase">
+                                    Teórica / Futuro
+                                </span>
+                                <i class="fa-solid fa-brain-circuit text-pink-400 text-lg"></i>
+                            </div>
+                            <h3 class="text-base sm:text-lg font-bold text-white mb-2">3. IA Fuerte (AGI)</h3>
+                            <p class="text-slate-300 text-xs mb-3 leading-relaxed">
+                                Un sistema con <strong>conciencia propia, sentimientos e inteligencia humana total</strong>.
+                            </p>
+                            <ul class="text-[11px] text-slate-400 space-y-1 mb-3">
+                                <li>• Sentiría emociones y tendría opinión propia.</li>
+                                <li>• Aprendería cualquier profesión sin ser programada.</li>
+                                <li>• <i>Aún no existe en la vida real.</i></li>
+                            </ul>
+                        </div>
+                        <div class="bg-pink-950/60 p-2 rounded-xl border border-pink-800/40 text-center text-[11px] text-pink-200 font-medium">
+                            🎬 <strong>Ejemplos:</strong> Robot de Terminator, Jarvis.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mini Reto de Aula -->
+                <div class="bg-slate-950 border border-purple-800/50 p-4 rounded-2xl text-center">
+                    <span class="text-xs font-bold text-purple-300 block mb-1">⚡ DESAFÍO RÁPIDO DE CLASE</span>
+                    <p class="text-xs text-slate-300 mb-3">"Entrás a ChatGPT o Gemini para pedirle que te ayude con una tarea de historia y te responda con datos exactos": ¿Qué tipo de herramienta es?</p>
+                    <div class="flex justify-center gap-2 sm:gap-3 flex-wrap">
+                        <button onclick="checkQuickAnswer('plataforma')" class="px-3 py-1.5 bg-cyan-800 hover:bg-cyan-700 text-white font-bold text-xs rounded-lg transition">IA de Plataforma (Específica)</button>
+                        <button onclick="checkQuickAnswer('generativa')" class="px-3 py-1.5 bg-purple-800 hover:bg-purple-700 text-white font-bold text-xs rounded-lg transition">IA Generativa / Conversacional</button>
+                        <button onclick="checkQuickAnswer('fuerte')" class="px-3 py-1.5 bg-pink-800 hover:bg-pink-700 text-white font-bold text-xs rounded-lg transition">IA Fuerte (Con Conciencia)</button>
+                    </div>
+                    <p id="challenge-feedback" class="text-xs font-semibold min-h-[1.25rem] mt-2"></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 3: Historia y Evolución -->
+        <section class="page-slide w-full">
+            <div class="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
+                    <div class="p-3 bg-amber-900/40 border border-amber-700/50 rounded-xl text-amber-400">
+                        <i class="fa-solid fa-timeline text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-white">3. Breve Historia y Evolución</h2>
+                        <p class="text-xs text-slate-400">Los grandes momentos en la historia de la informática</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- Hito 1 -->
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl flex gap-3 items-start">
+                        <div class="bg-amber-500/20 text-amber-400 font-black text-sm px-3 py-1.5 rounded-lg border border-amber-500/30 shrink-0">
+                            1950
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">El Test de Turing</h4>
+                            <p class="text-xs text-slate-400 mt-1">Alan Turing (padre de la computación) plantea la pregunta: <em>"¿Pueden pensar las máquinas?"</em> y diseña una prueba para comprobarlo.</p>
+                        </div>
+                    </div>
+
+                    <!-- Hito 2 -->
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl flex gap-3 items-start">
+                        <div class="bg-amber-500/20 text-amber-400 font-black text-sm px-3 py-1.5 rounded-lg border border-amber-500/30 shrink-0">
+                            1956
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">Nace el nombre "IA"</h4>
+                            <p class="text-xs text-slate-400 mt-1">Científicos se reúnen en la conferencia de Dartmouth y usan por primera vez en la historia el término "Inteligencia Artificial".</p>
+                        </div>
+                    </div>
+
+                    <!-- Hito 3 -->
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl flex gap-3 items-start">
+                        <div class="bg-amber-500/20 text-amber-400 font-black text-sm px-3 py-1.5 rounded-lg border border-amber-500/30 shrink-0">
+                            1997
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">Deep Blue vs. Ajedrez</h4>
+                            <p class="text-xs text-slate-400 mt-1">La supercomputadora de IBM vence al campeón mundial Garry Kasparov en ajedrez. Un gran triunfo de la IA Específica.</p>
+                        </div>
+                    </div>
+
+                    <!-- Hito 4 -->
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl flex gap-3 items-start">
+                        <div class="bg-amber-500/20 text-amber-400 font-black text-sm px-3 py-1.5 rounded-lg border border-amber-500/30 shrink-0">
+                            2022+
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-sm">IA Generativa Actual</h4>
+                            <p class="text-xs text-slate-400 mt-1">Llegan sistemas como ChatGPT o Gemini capaces de crear texto, código, arte, música e imágenes en segundos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 4: La IA en la Vida Cotidiana -->
+        <section class="page-slide w-full">
+            <div class="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl">
+                <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
+                    <div class="p-3 bg-emerald-900/40 border border-emerald-700/50 rounded-xl text-emerald-400">
+                        <i class="fa-solid fa-mobile-screen-button text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-white">4. La IA en tu vida diaria</h2>
+                        <p class="text-xs text-slate-400">¡Seguro ya la estás usando hoy!</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Item 1 -->
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl text-center card-hover">
+                        <div class="w-10 h-10 mx-auto bg-red-500/20 text-red-400 rounded-xl flex items-center justify-center text-xl mb-2">
+                            <i class="fa-brands fa-youtube"></i>
+                        </div>
+                        <h4 class="font-bold text-white text-sm mb-1">Recomendaciones</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">
+                            Spotify, YouTube y TikTok usan algoritmos para proponerte canciones y videos exactos a tus gustos.
+                        </p>
+                    </div>
+
+                    <!-- Item 2 -->
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl text-center card-hover">
+                        <div class="w-10 h-10 mx-auto bg-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-xl mb-2">
+                            <i class="fa-solid fa-camera"></i>
+                        </div>
+                        <h4 class="font-bold text-white text-sm mb-1">Cámaras y Filtros</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">
+                            Reconocimiento facial en el celular para desbloquear o aplicar efectos animados en el rostro.
+                        </p>
+                    </div>
+
+                    <!-- Item 3 -->
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl text-center card-hover">
+                        <div class="w-10 h-10 mx-auto bg-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl mb-2">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </div>
+                        <h4 class="font-bold text-white text-sm mb-1">Navegación GPS</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">
+                            Google Maps o Waze calculan la ruta más rápida analizando miles de autos en tiempo real.
+                        </p>
+                    </div>
+
+                    <!-- Item 4 -->
+                    <div class="bg-slate-950 border border-slate-800 p-4 rounded-2xl text-center card-hover">
+                        <div class="w-10 h-10 mx-auto bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center text-xl mb-2">
+                            <i class="fa-solid fa-gamepad"></i>
+                        </div>
+                        <h4 class="font-bold text-white text-sm mb-1">Videojuegos</h4>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">
+                            Los bots y enemigos en los videojuegos reaccionan y se adaptan a tu nivel de juego.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PÁGINA 5: TRIVIA / GAME -->
+        <section class="page-slide w-full">
+            <div class="bg-gradient-to-r from-purple-950/60 via-slate-900 to-indigo-950/60 border border-purple-700/50 p-6 sm:p-8 rounded-3xl relative shadow-2xl">
+                
+                <div class="text-center mb-6">
+                    <span class="bg-purple-500/20 text-purple-300 border border-purple-500/40 text-[10px] px-3 py-1 rounded-full font-bold uppercase">
+                        Desafío Interactivo
+                    </span>
+                    <h2 class="text-2xl sm:text-3xl font-extrabold text-white mt-2">🎮 Trivia de Inteligencia Artificial</h2>
+                </div>
+
+                <!-- Contenedor del Quiz -->
+                <div id="quiz-container" class="max-w-xl mx-auto bg-slate-950 p-5 rounded-2xl border border-slate-800 shadow-2xl">
+                    <div class="flex justify-between items-center mb-4 text-xs font-semibold text-slate-400 border-b border-slate-800 pb-3">
+                        <span>Pregunta <span id="current-q">1</span> de <span id="total-q">4</span></span>
+                        <span id="score-display" class="text-purple-400 font-bold">Puntos: 0</span>
+                    </div>
+
+                    <h3 id="quiz-question" class="text-sm sm:text-base font-bold text-white mb-4">
+                        <!-- Pregunta insertada con JS -->
+                    </h3>
+
+                    <div id="quiz-options" class="space-y-2 mb-4">
+                        <!-- Opciones -->
+                    </div>
+
+                    <div id="quiz-feedback" class="hidden p-3 rounded-xl text-xs font-semibold text-center mb-3">
+                        <!-- Retroalimentación -->
+                    </div>
+
+                    <button id="next-btn" onclick="nextQuestion()" class="hidden w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2.5 rounded-xl transition text-xs sm:text-sm">
+                        Siguiente Pregunta <i class="fa-solid fa-arrow-right ml-1"></i>
+                    </button>
+                </div>
+
+                <!-- Pantalla Final del Quiz -->
+                <div id="quiz-results" class="hidden max-w-xl mx-auto text-center p-6 bg-slate-950 rounded-2xl border border-purple-800">
+                    <div class="text-4xl mb-2">🏆</div>
+                    <h3 class="text-xl font-bold text-white mb-2">¡Felicitaciones!</h3>
+                    <p class="text-slate-300 text-xs sm:text-sm mb-4" id="final-score-text">Completaste el desafío.</p>
+                    <button onclick="restartQuiz()" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-5 py-2 rounded-xl transition text-xs">
+                        Volver a intentar
+                    </button>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- PÁGINA 6: Cuestionario de Clase -->
+        <section class="page-slide w-full">
+            <div class="bg-slate-900 border border-slate-800 p-6 sm:p-8 rounded-3xl shadow-xl">
+                <div class="flex items-center gap-3 mb-4 border-b border-slate-800 pb-4">
+                    <i class="fa-solid fa-pen-to-square text-2xl text-amber-400"></i>
+                    <div>
+                        <h3 class="text-xl sm:text-2xl font-bold text-white">📝 Preguntas para trabajar en el cuaderno</h3>
+                        <p class="text-xs text-slate-400">Actividad práctica individual o en grupos</p>
+                    </div>
+                </div>
+
+                <p class="text-xs text-slate-300 mb-4">Copiá y respondé estas preguntas junto a tu profesor/a de Ciencias de la Computación:</p>
+                
+                <div class="space-y-3 text-xs sm:text-sm text-slate-300">
+                    <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                        <strong class="text-amber-400 block mb-1">1. Definición propia:</strong>
+                        ¿Qué diferencia principal encontrás entre un programa tradicional (como una calculadora) y un sistema con IA?
+                    </div>
+
+                    <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                        <strong class="text-amber-400 block mb-1">2. Tipos de IA:</strong>
+                        ¿Por qué los asistentes interactivos como ChatGPT o Gemini ofrecen una interacción más amplia que la IA de una plataforma como Spotify o TikTok? Explicá con tus palabras.
+                    </div>
+
+                    <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                        <strong class="text-amber-400 block mb-1">3. Aplicaciones en tu día:</strong>
+                        Mencioná 3 aplicaciones que uses en tu celular que utilicen IA y qué función cumplen.
+                    </div>
+
+                    <div class="bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                        <strong class="text-amber-400 block mb-1">4. Debate e Impacto:</strong>
+                        ¿Qué cosas pensás que una computadora con IA NUNCA va a poder reemplazar de los seres humanos?
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- BARRA INFERIOR DE NAVEGACIÓN (Página Anterior / Siguiente) -->
+    <footer class="bg-slate-900/90 border-t border-slate-800 py-3 px-4 sticky bottom-0 z-50 backdrop-blur-md">
+        <div class="max-w-5xl mx-auto flex items-center justify-between">
+            <button id="btn-prev" onclick="changePage(-1)" class="bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl transition flex items-center gap-2 border border-slate-700">
+                <i class="fa-solid fa-chevron-left"></i> Anterior
+            </button>
+
+            <span class="text-[11px] text-slate-500 hidden sm:inline-block">
+                UTU &bull; Ciencias de la Computación &bull; 7.° Año
+            </span>
+
+            <button id="btn-next" onclick="changePage(1)" class="bg-purple-600 hover:bg-purple-500 text-white text-xs sm:text-sm font-semibold px-4 py-2 rounded-xl transition flex items-center gap-2 shadow-lg">
+                Siguiente <i class="fa-solid fa-chevron-right"></i>
+            </button>
+        </div>
+    </footer>
+
+    <!-- LÓGICA JAVASCRIPT -->
+    <script>
+        let currentPage = 0;
+        const totalPages = 7; // De la 0 a la 6
+
+        function updateNavigation() {
+            // Ocultar todas las páginas
+            const pages = document.querySelectorAll('.page-slide');
+            pages.forEach((p, idx) => {
+                p.classList.toggle('active', idx === currentPage);
+            });
+
+            // Actualizar indicador
+            document.getElementById('page-indicator').innerText = currentPage + 1;
+
+            // Actualizar botones prev/next
+            document.getElementById('btn-prev').disabled = (currentPage === 0);
+            document.getElementById('btn-prev').classList.toggle('opacity-50', currentPage === 0);
+
+            document.getElementById('btn-next').disabled = (currentPage === totalPages - 1);
+            document.getElementById('btn-next').classList.toggle('opacity-50', currentPage === totalPages - 1);
+
+            // Actualizar estado activo en menú superior
+            const navBtns = document.querySelectorAll('.nav-btn');
+            navBtns.forEach((btn, idx) => {
+                if (idx % totalPages === currentPage) {
+                    btn.classList.add('active-tab');
+                } else {
+                    btn.classList.remove('active-tab');
+                }
+            });
+
+            // Auto-scroll hacia arriba suave
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function goToPage(pageIndex) {
+            if (pageIndex >= 0 && pageIndex < totalPages) {
+                currentPage = pageIndex;
+                updateNavigation();
+            }
+        }
+
+        function changePage(direction) {
+            const newPage = currentPage + direction;
+            if (newPage >= 0 && newPage < totalPages) {
+                currentPage = newPage;
+                updateNavigation();
+            }
+        }
+
+        // Mini desafío de IA
+        function checkQuickAnswer(type) {
+            const feedback = document.getElementById('challenge-feedback');
+            if (type === 'generativa') {
+                feedback.className = 'text-xs font-bold text-emerald-400 mt-2';
+                feedback.innerText = '¡Correcto! 🎉 Es una IA Generativa e Interactiva como ChatGPT o Gemini, que te permite acceder a información y conversar.';
+            } else if (type === 'plataforma') {
+                feedback.className = 'text-xs font-bold text-amber-400 mt-2';
+                feedback.innerText = '⚠️ Casi. La IA de plataforma es para tareas automáticas como recomendar un tema en Spotify o TikTok.';
+            } else {
+                feedback.className = 'text-xs font-bold text-pink-400 mt-2';
+                feedback.innerText = '❌ ¡No! La IA Fuerte tendría emociones y conciencia propia (como en las películas).';
+            }
+        }
+
+        // --- SISTEMA DE QUIZ / TRIVIA ---
+        const quizData = [
+            {
+                question: "¿Qué caracteriza a la IA de una plataforma como TikTok o Spotify?",
+                options: [
+                    "Escribe cuentos y responde tus dudas sobre historia.",
+                    "Siente tristeza si no escuchas música.",
+                    "Está programada para una función concreta: sugerir contenido según lo que te gusta.",
+                    "Tiene conciencia propia y piensa como un humano."
+                ],
+                correct: 2,
+                explanation: "¡Exacto! Son algoritmos de IA Específica dedicados a esa única tarea."
+            },
+            {
+                question: "¿A qué categoría pertenecen herramientas interactivas como ChatGPT o Gemini?",
+                options: [
+                    "A un reloj despertador digital.",
+                    "A la IA Generativa e Interactiva, capaz de procesar información, redactar y dialogar.",
+                    "A la IA Fuerte con sentimientos y conciencia propia.",
+                    "A un virus informático."
+                ],
+                correct: 1,
+                explanation: "¡Muy bien! Son modelos de lenguaje generativos que procesan grandes volúmenes de información e interactúan contigo."
+            },
+            {
+                question: "¿Quién fue el científico pionero en proponer una prueba para evaluar si las máquinas pueden pensar?",
+                options: [
+                    "Bill Gates",
+                    "Steve Jobs",
+                    "Alan Turing",
+                    "Mark Zuckerberg"
+                ],
+                correct: 2,
+                explanation: "¡Muy bien! Alan Turing creó en 1950 el famoso 'Test de Turing'."
+            },
+            {
+                question: "La IA FUERTE (AGI) se diferencia de ChatGPT o Spotify porque:",
+                options: [
+                    "Funciona solo en celulares antiguos.",
+                    "Sirve para jugar al ajedrez.",
+                    "Tendría autoconciencia, emociones y la capacidad mental completa de un ser humano.",
+                    "Solo puede sumar y restar."
+                ],
+                correct: 2,
+                explanation: "¡Excelente! La IA Fuerte es un concepto teórico que alcanzaría la autoconciencia humana."
+            }
+        ];
+
+        let currentQIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        function loadQuestion() {
+            answered = false;
+            const currentData = quizData[currentQIndex];
+            document.getElementById('current-q').innerText = currentQIndex + 1;
+            document.getElementById('total-q').innerText = quizData.length;
+            document.getElementById('quiz-question').innerText = currentData.question;
+            
+            const optionsContainer = document.getElementById('quiz-options');
+            optionsContainer.innerHTML = '';
+
+            const feedback = document.getElementById('quiz-feedback');
+            feedback.classList.add('hidden');
+
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.classList.add('hidden');
+
+            currentData.options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left p-3 rounded-xl border border-slate-800 bg-slate-900 hover:bg-slate-800 text-slate-200 text-xs sm:text-sm font-medium transition flex items-center justify-between';
+                btn.innerHTML = `<span>${opt}</span> <i class="fa-regular fa-circle text-slate-600"></i>`;
+                btn.onclick = () => selectOption(index, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(selectedIndex, btnElement) {
+            if (answered) return;
+            answered = true;
+
+            const currentData = quizData[currentQIndex];
+            const feedback = document.getElementById('quiz-feedback');
+            const options = document.getElementById('quiz-options').children;
+
+            if (selectedIndex === currentData.correct) {
+                score += 25;
+                document.getElementById('score-display').innerText = `Puntos: ${score}`;
+                btnElement.className = 'w-full text-left p-3 rounded-xl border-2 border-emerald-500 bg-emerald-950/40 text-emerald-200 text-xs sm:text-sm font-bold flex items-center justify-between';
+                btnElement.querySelector('i').className = 'fa-solid fa-circle-check text-emerald-400';
+                
+                feedback.className = 'p-2.5 rounded-xl text-xs font-semibold text-center mb-3 bg-emerald-950/80 text-emerald-300 border border-emerald-700';
+                feedback.innerText = currentData.explanation;
+            } else {
+                btnElement.className = 'w-full text-left p-3 rounded-xl border-2 border-red-500 bg-red-950/40 text-red-200 text-xs sm:text-sm font-bold flex items-center justify-between';
+                btnElement.querySelector('i').className = 'fa-solid fa-circle-xmark text-red-400';
+
+                const correctBtn = options[currentData.correct];
+                correctBtn.className = 'w-full text-left p-3 rounded-xl border-2 border-emerald-500 bg-emerald-950/40 text-emerald-200 text-xs sm:text-sm font-bold flex items-center justify-between';
+
+                feedback.className = 'p-2.5 rounded-xl text-xs font-semibold text-center mb-3 bg-red-950/80 text-red-300 border border-red-700';
+                feedback.innerText = '❌ Respuesta incorrecta. ¡Repasemos la teoría!';
+            }
+
+            feedback.classList.remove('hidden');
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQIndex++;
+            if (currentQIndex < quizData.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-container').classList.add('hidden');
+            const results = document.getElementById('quiz-results');
+            results.classList.remove('hidden');
+            document.getElementById('final-score-text').innerText = `Lograste ${score} de 100 puntos en la trivia.`;
+
+            if (score >= 75 && typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+        }
+
+        function restartQuiz() {
+            currentQIndex = 0;
+            score = 0;
+            document.getElementById('score-display').innerText = `Puntos: 0`;
+            document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-container').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        // Inicializar
+        window.onload = function() {
+            loadQuestion();
+            updateNavigation();
+        };
+    </script>
+</body>
+</html>
